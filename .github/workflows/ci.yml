@@ -25,6 +25,11 @@ jobs:
         run: test -z "$(gofmt -l .)"
       - run: go vet ./...
       - run: go test ./...
+      - name: Test user installation and upgrades
+        run: |
+          go build -o "$RUNNER_TEMP/install-test-service" tests/integration/fixtures/service.go
+          go build -o "$RUNNER_TEMP/install-test-hub" ./cmd/gpu-hub
+          CARDSCOPE_TEST_BINARY="$RUNNER_TEMP/install-test-service" CARDSCOPE_HUB_BINARY="$RUNNER_TEMP/install-test-hub" python3 tests/integration/test_install.py -v
       - name: Build Linux binaries
         run: |
           for arch in amd64 arm64; do

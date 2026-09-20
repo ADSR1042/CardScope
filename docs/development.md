@@ -1,6 +1,6 @@
 # 开发与验证
 
-需要 Go 1.24+、Node.js 20+、npm；Python 辅助脚本需要 Python 3.11+。以下命令从仓库根目录执行，注明例外的除外。
+需要 Go 1.26+、Node.js 20.19+（20.x）或 22.12+、npm；Python 辅助脚本需要 Python 3.11+。以下命令从仓库根目录执行，注明例外的除外。
 
 ## 本地检查
 
@@ -29,6 +29,15 @@ sh scripts/build/build.sh
 ```
 
 Windows 使用 `scripts/build/build.ps1`，从 PATH 查找 Go，也可通过环境变量 `GO_BINARY` 指定 Go 可执行文件路径。两个脚本都先构建前端、运行 Go 测试，再生成 Linux amd64/arm64 发行包到 `dist`。测试报告源文件在 `docs/testing.md`，发行包内仍命名为 `TEST-REPORT.md`。
+
+发行包同时包含普通用户安装脚本，见 [安装与升级](deployment.md)。隔离安装测试使用临时 HOME、模拟 crontab 和无网络的测试进程，不操作真实服务。CI 自动执行，Linux 普通用户也可运行：
+
+```sh
+test_dir=$(mktemp -d)
+go build -o "$test_dir/service" tests/integration/fixtures/service.go
+go build -o "$test_dir/hub" ./cmd/gpu-hub
+CARDSCOPE_TEST_BINARY="$test_dir/service" CARDSCOPE_HUB_BINARY="$test_dir/hub" python3 tests/integration/test_install.py -v
+```
 
 ## 集成测试与浏览器测试
 

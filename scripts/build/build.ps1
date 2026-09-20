@@ -23,6 +23,7 @@ try {
         Copy-Item README.md "$out/README.md"
         Copy-Item LICENSE "$out/LICENSE"
         Copy-Item docs/testing.md "$out/TEST-REPORT.md"
+        Copy-Item scripts/ops/install-hub.sh,scripts/ops/install-agent.sh,scripts/ops/install-user.sh,scripts/ops/ensure-running.py $out
         tar.exe -czf "dist/gpu-monitor-linux-$arch.tar.gz" -C dist "linux-$arch"
         if ($LASTEXITCODE -ne 0) { throw 'Archive failed' }
     }

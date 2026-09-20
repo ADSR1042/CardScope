@@ -11,6 +11,7 @@ for arch in amd64 arm64; do
   cp README.md "dist/linux-$arch/README.md"
   cp LICENSE "dist/linux-$arch/LICENSE"
   cp docs/testing.md "dist/linux-$arch/TEST-REPORT.md"
+  cp scripts/ops/install-hub.sh scripts/ops/install-agent.sh scripts/ops/install-user.sh scripts/ops/ensure-running.py "dist/linux-$arch/"
   tar -czf "dist/gpu-monitor-linux-$arch.tar.gz" -C dist "linux-$arch"
 done
 (cd dist && sha256sum ./*.tar.gz > SHA256SUMS)

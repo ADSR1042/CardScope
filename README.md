@@ -30,30 +30,23 @@ gpu-hub ── SQLite
 
 ## 快速部署
 
-下载对应架构发行包，解压后 `chmod +x gpu-hub gpu-agent`。中心机不需要显卡。
+下载对应架构发行包并解压。两端都以普通用户运行，使用用户 cron 开机启动和每分钟守护，不需要 sudo。机器需要已运行的 cron、Python 3.8+ 和 Bash。中心机不需要显卡。
 
 ```bash
-# 中心机器；首次启动交互设置 admin 与 viewer 密码
-./gpu-hub serve --listen 0.0.0.0:8080 --data ./data
+# 新中心机器；首次交互设置 admin 与 viewer 密码
+bash install-hub.sh
 ```
 
 浏览器打开 `http://中心IP:8080`，使用 `admin` 登录，在“添加节点”生成一次性接入码。
 
 ```bash
-# GPU 服务器普通用户执行；交互输入接入码，不放在命令行
-./gpu-agent setup --server http://中心IP:8080
-./gpu-agent doctor
-./gpu-agent start
-
-# 可选用户服务，不使用 sudo
-./gpu-agent service install --user
-systemctl --user status gpu-agent
-journalctl --user -u gpu-agent -n 50
+# GPU 服务器普通用户执行；交互输入接入码
+bash install-agent.sh http://中心IP:8080
 ```
 
-无需 Python、CUDA Toolkit、Docker、编译器或 sudo；需要机器已有 NVIDIA 驱动，并允许当前用户读取 GPU。中心监听 8080，客户端不监听端口；客户端只能向自己的节点上传。HTTP 按受控内网部署，当前不实现 TLS 或 SSH 拉取。
+以后解压新发行包，再执行对应的 `bash install-hub.sh` 或 `bash install-agent.sh` 即可升级；脚本保留数据和身份，自动备份并重启。已有服务端首次迁移时，先停止旧进程和旧守护任务，再执行 `bash install-hub.sh /原数据目录`。完整说明见 [安装与升级](docs/deployment.md)。
 
-建议将发行包放在稳定的用户目录，如 `~/.local/share/gpu-monitor/`，不要移动已安装用户服务引用的程序。`Linger=no` 时用户服务不保证登出后或开机时运行，程序不修改这一设置。无用户服务时可前台运行或使用 tmux。
+客户端需要机器已有 NVIDIA 驱动，并允许当前用户读取 GPU。中心监听 8080，客户端不监听端口。HTTP 按受控内网部署，当前不实现 TLS 或 SSH 拉取。直接运行二进制不需要 Python，可手动使用 `./gpu-hub serve --data ./data` 或 `./gpu-agent start`；上述安装脚本的 cron 守护需要 Python。
 
 ## 账号与节点
 

@@ -17,11 +17,11 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 || os.Args[1] != "serve" {
-		fmt.Println("gpu-hub serve --listen 0.0.0.0:8080 --data ./data")
+	if len(os.Args) < 2 || (os.Args[1] != "serve" && os.Args[1] != "init") {
+		fmt.Println("gpu-hub init --data ./data | serve --listen 0.0.0.0:8080 --data ./data")
 		return
 	}
-	f := flag.NewFlagSet("serve", flag.ExitOnError)
+	f := flag.NewFlagSet(os.Args[1], flag.ExitOnError)
 	listen := f.String("listen", "0.0.0.0:8080", "监听地址")
 	data := f.String("data", "./data", "数据目录")
 	f.Parse(os.Args[2:])
@@ -53,6 +53,10 @@ func main() {
 			fmt.Fprintln(os.Stderr, e)
 			os.Exit(1)
 		}
+	}
+	if os.Args[1] == "init" {
+		fmt.Println("数据库已初始化，保留现有账号和节点。")
+		return
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
