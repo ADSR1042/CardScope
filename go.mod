@@ -1,9 +1,9 @@
 module gpu-monitor
 
-go 1.24.0
+go 1.25.0
 
 require (
-	github.com/ebitengine/purego v0.9.0
+	github.com/ebitengine/purego v0.11.0
 	github.com/shirou/gopsutil/v4 v4.25.2
 	golang.org/x/crypto v0.36.0
 	golang.org/x/term v0.30.0
