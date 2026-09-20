@@ -3,7 +3,7 @@ module gpu-monitor
 go 1.26.0
 
 require (
-	github.com/ebitengine/purego v0.10.2
+	github.com/ebitengine/purego v0.11.0
 	github.com/shirou/gopsutil/v4 v4.26.8
 	golang.org/x/crypto v0.57.0
 	golang.org/x/term v0.46.0
