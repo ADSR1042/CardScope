@@ -4,8 +4,10 @@ import json
 import os
 import signal
 import sqlite3
+import struct
 import subprocess
 import time
+import zlib
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
@@ -38,9 +40,32 @@ for _ in range(30):
         break
     time.sleep(0.1)
 time.sleep(13)
-queued = list((state / "agent" / "queue").glob("*.json"))
+
+
+def queued_samples():
+    data = (state / "agent" / "queue.bin").read_bytes()
+    samples = {}
+    offset = 4096
+    while offset + 64 <= len(data):
+        header = data[offset : offset + 64]
+        if (
+            header[:8] != b"CSREC001"
+            or zlib.crc32(header[:36]) != struct.unpack_from("<I", header, 36)[0]
+        ):
+            offset += 4096
+            continue
+        record_id = struct.unpack_from("<Q", header, 8)[0]
+        size = struct.unpack_from("<I", header, 16)[0]
+        payload = data[offset + 64 : offset + 64 + size]
+        if zlib.crc32(payload) == struct.unpack_from("<I", header, 32)[0]:
+            samples[record_id] = json.loads(payload)
+        offset += ((size + 64 + 4095) // 4096) * 4096
+    return samples
+
+
+queued = queued_samples()
 assert len(queued) >= 2, f"Expected offline samples, found {len(queued)}"
-retained = [json.loads(p.read_text()) for p in queued]
+retained = list(queued.values())
 log = (state / "hub.log").open("a")
 hub = subprocess.Popen(
     [hub_binary, "serve", "--listen", "0.0.0.0:8080", "--data", str(state / "hub")],
@@ -51,7 +76,7 @@ hub = subprocess.Popen(
 )
 (state / "hub.pid").write_text(str(hub.pid))
 for _ in range(30):
-    if all(not p.exists() for p in queued):
+    if not (queued.keys() & queued_samples().keys()):
         break
     time.sleep(1)
 else:

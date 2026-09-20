@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"syscall"
 	"time"
 )
@@ -27,8 +26,12 @@ func run() error {
 		return e
 	}
 	defer lock.Close()
-	dir := filepath.Join(configDir(), "queue")
-	if e = os.MkdirAll(dir, 0700); e != nil {
+	q, e := openQueue(filepath.Join(configDir(), "queue.bin"), queueCapacity)
+	if e != nil {
+		return e
+	}
+	defer q.Close()
+	if e = q.migrate(filepath.Join(configDir(), "queue")); e != nil {
 		return e
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -36,15 +39,11 @@ func run() error {
 	col := collect.New()
 	boot := random()
 	seq := int64(0)
-	dropped := int64(0)
-	if b, e := os.ReadFile(filepath.Join(configDir(), "dropped")); e == nil {
-		dropped, _ = strconv.ParseInt(string(b), 10, 64)
-	}
 	// 单个上传协程顺序发送；网络超时不会阻塞主循环继续采样和写入队列。
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		uploadLoop(ctx, c, dir)
+		uploadLoop(ctx, c, q)
 	}()
 	ticker := time.NewTicker(time.Duration(c.Interval) * time.Second)
 	defer ticker.Stop()
@@ -60,13 +59,11 @@ func run() error {
 		s.BootID = boot
 		s.Seq = seq
 		s.Interval = c.Interval
-		s.CacheDropped = dropped
+		s.CacheDropped = q.Dropped()
 		b, _ := json.Marshal(s)
-		name := fmt.Sprintf("%013d-%s-%010d.json", s.At, boot, seq)
-		if e := atomic(filepath.Join(dir, name), b); e != nil {
-			return e
+		if e := q.push(b, s.At); e != nil {
+			fmt.Fprintln(os.Stderr, "缓存写入失败，本次样本未保存:", e)
 		}
-		dropped = pruneQueue(dir, dropped)
 		select {
 		case <-ctx.Done():
 			return nil

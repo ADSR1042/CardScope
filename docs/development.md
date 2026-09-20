@@ -50,3 +50,16 @@ CARDSCOPE_TEST_BINARY="$test_dir/service" CARDSCOPE_HUB_BINARY="$test_dir/hub" p
 - 浏览器测试通过 `web/tests/e2e/paths.mjs` 定位仓库和 `.runtime`，不依赖启动命令的当前目录。
 
 历史验证记录见 [测试报告](testing.md)，其中的实机结论对应当时的环境，不能替代当前修改后的回归检查。
+
+## 预分配缓存满盘测试
+
+`go test ./internal/agent` 覆盖循环覆盖、过期淘汰、旧队列迁移、损坏记录恢复和上传确认。
+Linux 还检查缓存实际分配的磁盘块。满盘测试必须使用独立临时文件系统，不能填满真实 home：
+
+```sh
+go test -c -o /tmp/cardscope-agent.test ./internal/agent
+sudo unshare -m bash tests/integration/test_queue_full.sh /tmp/cardscope-agent.test
+```
+
+上述命令仅为测试挂载临时 16 MiB tmpfs 使用管理员权限，客户端运行不需要 sudo。
+测试先预分配缓存，再填满该隔离文件系统，验证覆盖、回收、重开及新建缓存失败；退出时卸载。

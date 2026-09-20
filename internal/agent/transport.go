@@ -36,7 +36,7 @@ func post(c Config, path string, v any, out any) error {
 		return fmt.Errorf("中心连接失败")
 	}
 	defer res.Body.Close()
-	if res.StatusCode >= 400 {
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		return fmt.Errorf("中心返回 HTTP %d", res.StatusCode)
 	}
 	if out != nil {
