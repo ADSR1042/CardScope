@@ -2,12 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import ts from 'typescript';
+import { transformWithOxc } from 'vite';
 
 const source = readFileSync(new URL('../src/lib/time.ts', import.meta.url), 'utf8');
-const compiled = ts.transpileModule(source, {
-  compilerOptions: { module: ts.ModuleKind.ESNext },
-}).outputText;
+const { code: compiled } = await transformWithOxc(source, 'time.ts', { target: 'es2022' });
 const url = `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`;
 for (const [zone, instant, clock, offset] of [
   ['Asia/Shanghai', '2026-07-01T12:00:00Z', '20:00:00', 'UTC+08:00'],

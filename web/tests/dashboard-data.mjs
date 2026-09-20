@@ -1,20 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import ts from 'typescript';
+import { transformWithOxc } from 'vite';
 
 // Run the production selectors without adding a browser or test-runner dependency.
-function moduleURL(path, replacements = {}) {
+async function moduleURL(path, replacements = {}) {
   let source = readFileSync(new URL(path, import.meta.url), 'utf8');
   for (const [from, to] of Object.entries(replacements)) source = source.replace(from, to);
-  const { outputText } = ts.transpileModule(source, {
-    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
-  });
+  const { code: outputText } = await transformWithOxc(source, path, { target: 'es2022' });
   return `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`;
 }
-const statusURL = moduleURL('../src/features/gpu/status.ts');
+const statusURL = await moduleURL('../src/features/gpu/status.ts');
 const { summarize, gpuState } = await import(
-  moduleURL('../src/features/dashboard/summary.ts', { '../gpu/status': statusURL })
+  await moduleURL('../src/features/dashboard/summary.ts', { '../gpu/status': statusURL })
 );
 const { idle, capacityKey } = await import(statusURL);
 const gpu = (changes = {}) => ({
