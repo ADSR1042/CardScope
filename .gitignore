@@ -1,0 +1,43 @@
+/dist/
+/data/
+/.runtime/
+/coverage/
+/web/node_modules/
+/web/dist/
+*.tsbuildinfo
+/internal/webui/assets/dist/
+*.log
+
+# Local development state
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.ruff_cache/
+.idea/
+.vscode/
+*.swp
+*.tmp
+
+# Credentials and local databases
+*.pem
+*.key
+*.p12
+*.pfx
+access.json
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Build and test artifacts
+*.exe
+*.test
+*.tar.gz
+/gpu-agent
+/gpu-hub
+/web/playwright-report/
+/web/test-results/

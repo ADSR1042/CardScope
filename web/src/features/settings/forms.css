@@ -1,0 +1,64 @@
+.settings-list {
+  display: grid;
+  gap: 18px;
+}
+.settings-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 23px;
+  margin-bottom: 18px;
+}
+.settings-panel > .section-line {
+  margin-top: 0;
+}
+.settings-panel > h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.settings-panel > p {
+  font-size: 13px;
+  margin-top: 8px;
+}
+.settings-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.settings-fields .form-field {
+  margin: 12px 0 18px;
+}
+.field-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.network-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 13px 0 22px;
+  font-size: 13px;
+}
+.network-choices label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.password-form {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.password-form input {
+  flex: 1;
+  min-width: 120px;
+}
+.dark .summary-label,
+.dark .summary-note {
+  color: var(--muted);
+}

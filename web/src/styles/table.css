@@ -1,0 +1,45 @@
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--panel2);
+  padding: 13px 18px;
+}
+td {
+  padding: 17px 18px;
+  border-top: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+td small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.table-empty {
+  padding: 35px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+.table-empty small {
+  font-size: 12px;
+}

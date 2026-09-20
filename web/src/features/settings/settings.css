@@ -1,0 +1,33 @@
+.sidebar nav {
+  margin-top: 38px;
+}
+.login-art h1,
+.login-art p,
+.login-caption,
+.login-art .eyebrow {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.login-copy-form {
+  margin-top: 20px;
+  max-width: 660px;
+}
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  resize: vertical;
+  width: 100%;
+}
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .sidebar nav {
+    margin-top: 0;
+  }
+}

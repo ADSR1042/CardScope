@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@import 'base.css';
+@import 'components.css';
+@import '../app/layout.css';
+@import '../features/nodes/nodes.css';
+@import 'feedback.css';
+@import '../features/auth/login.css';
+@import 'dialog.css';
+@import '../features/gpu/detail.css';
+@import '../features/nodes/enrollment.css';
+@import 'table.css';
+@import '../features/settings/forms.css';
+@import 'responsive.css';
+@import '../features/settings/settings.css';
+@import '../features/statistics/statistics.css';
+@import '../features/nodes/resources.css';
+@import '../features/dashboard/dashboard.css';
+
+@import 'select.css';

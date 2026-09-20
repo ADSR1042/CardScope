@@ -1,0 +1,39 @@
+.enrollment {
+  margin-top: 25px;
+  font-size: 14px;
+}
+.enrollment label {
+  color: var(--muted);
+  font-size: 13px;
+}
+.enrollment code {
+  display: block;
+  word-break: break-all;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 9px 0 13px;
+}
+.enrollment ol {
+  padding-left: 18px;
+  margin: 25px 0 14px;
+  color: var(--muted);
+  line-height: 2.2;
+  list-style: decimal;
+}
+.enrollment pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: #182d27;
+  color: #b6d7c6;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 13px;
+}
+.enrollment p {
+  margin-top: 15px;
+  line-height: 1.8;
+}

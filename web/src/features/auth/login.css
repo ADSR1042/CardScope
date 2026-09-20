@@ -1,0 +1,121 @@
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  background: var(--panel);
+}
+.login-art {
+  background: #eaf6f1;
+  border: 1px solid #dcece5;
+  border-radius: 24px;
+  margin: 24px;
+  padding: clamp(30px, 4vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #235a4e;
+  min-height: calc(100vh - 48px);
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.login-art .brand-icon {
+  width: 44px;
+  height: 44px;
+}
+.login-art .eyebrow {
+  margin: 0;
+  color: #477b6e;
+  font-size: 11px;
+  letter-spacing: 1.8px;
+}
+.login-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 0;
+}
+.login-art h1 {
+  font-size: clamp(40px, 4vw, 64px);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+}
+.login-art p {
+  margin-top: 28px;
+  font-size: 15px;
+  line-height: 2;
+  color: #587c72;
+}
+.login-caption {
+  width: 100%;
+  border-top: 1px solid #cedfd7;
+  padding-top: 22px;
+  font-size: 11px;
+  line-height: 1.8;
+  letter-spacing: 1px;
+  color: #5f8177;
+}
+.dark .login-art {
+  background: #203b34;
+  border-color: #355348;
+  color: #d6f0e5;
+}
+.dark .login-art .eyebrow,
+.dark .login-art p,
+.dark .login-caption {
+  color: #a8c6b9;
+}
+.dark .login-caption {
+  border-color: #405f53;
+}
+.login-panel {
+  display: grid;
+  place-items: center;
+  padding: 45px;
+}
+.login-form {
+  max-width: 350px;
+  width: 100%;
+}
+.login-form h2 {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.login-form > p {
+  font-size: 14px;
+  margin-top: 10px;
+}
+.login-form form {
+  margin-top: 34px;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 21px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.form-field input {
+  min-height: 43px;
+  font-size: 15px;
+}
+.login-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding-top: 18px;
+  font-size: 12px !important;
+  color: var(--muted);
+}
+.error-text {
+  color: #b45b52;
+  font-size: 13px;
+  margin: 8px 0;
+}

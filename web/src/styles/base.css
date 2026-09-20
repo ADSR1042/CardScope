@@ -1,0 +1,95 @@
+:root {
+  font-family: Inter, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  color: #263341;
+  background: #f5f7f9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --bg: #f5f7f9;
+  --panel: #fff;
+  --panel2: #f8fafb;
+  --border: #e7ebef;
+  --muted: #85909e;
+  --text: #263341;
+  --accent: #138b76;
+  --tint: #e9f5f0;
+  --shadow: 0 3px 14px #20334404;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #179d86;
+  outline-offset: 3px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+input,
+select {
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 38px;
+  padding: 8px 11px;
+  font-size: 14px;
+}
+input::placeholder {
+  color: #9aa3ae;
+}
+select {
+  max-width: 230px;
+}
+input[type='checkbox'] {
+  min-height: unset;
+  accent-color: var(--accent);
+}
+.dark {
+  --bg: #11191e;
+  --panel: #192329;
+  --panel2: #152027;
+  --border: #2a373f;
+  --muted: #92a2ab;
+  --text: #dee8ed;
+  --accent: #4bceb2;
+  --tint: #203a33;
+  --shadow: none;
+  color: var(--text);
+  background: var(--bg);
+}

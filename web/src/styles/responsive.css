@@ -1,0 +1,292 @@
+@media (min-width: 1550px) {
+  .gpu-table-head,
+  .gpu-row {
+    grid-template-columns:
+      minmax(220px, 1.5fr) minmax(150px, 0.8fr) minmax(200px, 1fr) minmax(120px, 0.8fr)
+      100px 16px;
+  }
+}
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 200px;
+    padding-inline: 14px;
+  }
+  .main {
+    margin-left: 200px;
+  }
+  .page {
+    padding: 28px 24px;
+  }
+  .topbar {
+    padding: 0 24px;
+  }
+  .gpu-table-head,
+  .gpu-row {
+    gap: 12px;
+    grid-template-columns:
+      minmax(155px, 1.3fr) minmax(60px, 0.6fr) minmax(110px, 1fr) minmax(70px, 0.7fr)
+      68px 12px;
+  }
+  .summary {
+    padding: 16px;
+  }
+  .node-footer {
+    gap: 14px;
+  }
+  .summary-note {
+    font-size: 10px;
+  }
+}
+@media (max-width: 960px) {
+  .sidebar {
+    width: 70px;
+    padding: 26px 12px;
+  }
+  .brand {
+    justify-content: center;
+  }
+  .brand > span:last-child,
+  .workspace,
+  .nav-label,
+  .nav-count,
+  .agent-note,
+  .account > div,
+  .account > span {
+    display: none;
+  }
+  nav {
+    margin-top: 45px;
+  }
+  nav button {
+    font-size: 0;
+    padding: 14px;
+    justify-content: center;
+  }
+  nav button svg {
+    flex-shrink: 0;
+  }
+  .account {
+    justify-content: center;
+    padding: 17px 0;
+  }
+  .account button {
+    margin: 0;
+  }
+  .main {
+    margin-left: 70px;
+  }
+  .summary-grid {
+    gap: 10px;
+  }
+  .summary-value {
+    font-size: 31px;
+  }
+  .node-expanded {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gpu-table {
+    overflow: auto;
+  }
+  .gpu-table-head,
+  .gpu-row {
+    min-width: 670px;
+  }
+  .summary-note {
+    line-height: 1.7;
+    min-height: 27px;
+  }
+  .brand-icon {
+    width: 36px;
+  }
+  .topbar {
+    height: 62px;
+  }
+  .page-heading h1 {
+    font-size: 27px;
+  }
+}
+@media (max-width: 640px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: 59px;
+    padding: 8px 15px;
+    flex-direction: row;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand > span:last-child {
+    display: block;
+    font-size: 16px;
+  }
+  .brand small {
+    display: none;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 29px;
+    border-radius: 7px;
+  }
+  .brand-icon svg {
+    width: 19px;
+  }
+  .sidebar nav {
+    margin: 0 0 0 auto;
+    flex-direction: row;
+    gap: 3px;
+  }
+  .sidebar nav button {
+    padding: 10px;
+  }
+  .sidebar-bottom {
+    display: none;
+  }
+  .main {
+    margin: 0;
+  }
+  .topbar {
+    height: 47px;
+    padding: 0 17px;
+  }
+  .page {
+    padding: 23px 16px;
+  }
+  .page-heading {
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 24px;
+  }
+  .page-heading h1 {
+    font-size: 25px;
+  }
+  .page-heading p {
+    font-size: 12px;
+    max-width: 240px;
+  }
+  .page-heading > .button {
+    font-size: 12px;
+    padding: 8px;
+    min-height: 33px;
+  }
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+  .summary-note {
+    min-height: 0;
+  }
+  .summary-value {
+    font-size: 31px;
+  }
+  .summary {
+    padding: 14px 15px;
+  }
+  .section-line {
+    align-items: flex-start;
+  }
+  .section-line > .tiny {
+    font-size: 10px;
+    max-width: 165px;
+    line-height: 1.7;
+  }
+  .search {
+    flex-basis: 100%;
+  }
+  .filters select {
+    flex: 1;
+    min-width: 110px;
+    max-width: unset;
+    font-size: 12px;
+  }
+  .node-header {
+    padding: 15px;
+  }
+  .node-icon {
+    width: 32px;
+    height: 33px;
+  }
+  .node-identity h3 {
+    font-size: 14px;
+    gap: 5px;
+  }
+  .node-identity p {
+    font-size: 11px;
+  }
+  .detail-button {
+    font-size: 11px;
+  }
+  .node-footer {
+    padding: 10px 15px;
+    gap: 10px 17px;
+  }
+  .node-footer .last-report {
+    display: none;
+  }
+  .node-expanded {
+    grid-template-columns: 1fr;
+    padding: 17px;
+  }
+  .footnote {
+    align-items: flex-start;
+    font-size: 10px;
+    line-height: 1.7;
+  }
+  .footnote svg {
+    flex-shrink: 0;
+  }
+  .drawer-metrics strong {
+    font-size: 18px;
+  }
+  .dialog-content.drawer {
+    padding: 28px 21px;
+  }
+  .login-shell {
+    grid-template-columns: 1fr;
+  }
+  .login-art {
+    display: none;
+  }
+  .login-panel {
+    padding: 30px;
+  }
+  .login-form {
+    max-width: 340px;
+  }
+  .password-form {
+    flex-direction: column;
+  }
+  .settings-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .settings-actions {
+    flex-wrap: wrap;
+  }
+  .settings-panel {
+    padding: 18px;
+  }
+  .notice {
+    font-size: 12px;
+  }
+  .stats-filters .button {
+    flex: 1;
+  }
+  .capabilities {
+    grid-template-columns: 1fr;
+  }
+  .dialog-title {
+    font-size: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
