@@ -4,7 +4,7 @@ Push-Location $projectRoot
 try {
     $goName = if ($env:GO_BINARY) { $env:GO_BINARY } else { 'go' }
     $goCommand = Get-Command $goName -CommandType Application -ErrorAction SilentlyContinue
-    if (-not $goCommand) { throw 'Install Go 1.24+ on PATH or set GO_BINARY to its executable path.' }
+    if (-not $goCommand) { throw 'Install Go 1.26+ on PATH or set GO_BINARY to its executable path.' }
     $goExe = $goCommand.Source
     Push-Location web
     try { npm.cmd ci; if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }; npm.cmd run build; if ($LASTEXITCODE -ne 0) { throw 'Frontend build failed' } } finally { Pop-Location }

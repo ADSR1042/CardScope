@@ -6,7 +6,7 @@
 
 修改前请阅读 [项目结构](docs/architecture.md) 和 [开发说明](docs/development.md)，按功能归属放置源码、测试和辅助脚本。
 
-- Go 1.24 或更高版本
+- Go 1.26 或更高版本
 - Node.js 20.19+（20.x）或 22.12+
 - npm
 - Python 3.11 或更高版本，仅用于运行辅助验证脚本

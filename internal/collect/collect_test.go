@@ -1,10 +1,36 @@
 package collect
 
 import (
+	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/disk"
+	"github.com/shirou/gopsutil/v4/mem"
+	"github.com/shirou/gopsutil/v4/process"
+	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestHostMetricsAndCurrentProcess(t *testing.T) {
+	cores, err := cpu.Counts(true)
+	if err != nil || cores <= 0 {
+		t.Fatalf("CPU count: %d %v", cores, err)
+	}
+	memory, err := mem.VirtualMemory()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if memory.Total == 0 || memory.Available > memory.Total {
+		t.Fatalf("invalid memory counters: %+v", memory)
+	}
+	p, err := process.NewProcess(int32(os.Getpid()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	created, err := p.CreateTime()
+	if err != nil || created <= 0 {
+		t.Fatalf("process identity timestamp: %d %v", created, err)
+	}
+}
 
 func TestMountRefreshAndStacking(t *testing.T) {
 	a := disk.PartitionStat{Device: "/dev/sdb1", Mountpoint: "/mnt/data", Fstype: "ext4"}
