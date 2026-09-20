@@ -129,7 +129,7 @@ journalctl --user -u gpu-agent -n 50
 
 目录职责见 [项目结构](docs/architecture.md)，本地开发和测试入口见 [开发说明](docs/development.md)。
 
-需要 Go 1.24+、Node 20.19+（20.x）或 22.12+、npm；仅构建环境需要这些工具。
+需要 Go 1.26+、Node 20.19+（20.x）或 22.12+、npm；仅构建环境需要这些工具。
 
 ```bash
 python -m pip install -r requirements-dev.txt
