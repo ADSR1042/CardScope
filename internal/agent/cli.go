@@ -24,6 +24,7 @@ func Main() {
 		e = collect.Worker(os.Args[2], os.Args[3])
 	case "doctor":
 		c := collect.New()
+		defer c.Close()
 		// CPU、网卡和磁盘速率依赖两次计数；首轮建立基线，第二轮才输出诊断结果。
 		c.Sample(context.Background())
 		time.Sleep(time.Second)

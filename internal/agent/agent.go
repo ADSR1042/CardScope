@@ -37,6 +37,7 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	col := collect.New()
+	defer col.Close()
 	boot := random()
 	seq := int64(0)
 	// 单个上传协程顺序发送；网络超时不会阻塞主循环继续采样和写入队列。

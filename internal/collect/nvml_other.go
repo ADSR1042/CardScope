@@ -9,3 +9,7 @@ import (
 
 func nvInventory() ([]model.GPU, error) { return nil, fmt.Errorf("Linux required") }
 func nvGPU(u string) (model.GPU, error) { return model.GPU{}, fmt.Errorf("Linux required") }
+
+func newStreamSampler(kind, arg string) (func() (any, error), func()) {
+	return fallbackStreamSampler(kind, arg), func() {}
+}

@@ -50,9 +50,11 @@ func openNVML() (*nvml, error) {
 	n := &nvml{lib: lib}
 	n.init, err = bind[func() int32](lib, "nvmlInit_v2")
 	if err != nil {
+		purego.Dlclose(lib)
 		return nil, err
 	}
 	if rc := n.init(); rc != 0 {
+		purego.Dlclose(lib)
 		return nil, fmt.Errorf("NVML init: %s", nvStatus(rc))
 	}
 	n.close, _ = bind[func() int32](lib, "nvmlShutdown")
@@ -94,7 +96,10 @@ func nvInventory() ([]model.GPU, error) {
 	if e != nil {
 		return nil, e
 	}
-	defer n.close()
+	defer n.release()
+	return n.inventory()
+}
+func (n *nvml) inventory() ([]model.GPU, error) {
 	var count uint32
 	if n.count == nil || n.byIndex == nil {
 		return nil, fmt.Errorf("NVML missing enumeration")
@@ -131,7 +136,11 @@ func nvGPU(uuid string) (model.GPU, error) {
 	if e != nil {
 		return g, e
 	}
-	defer n.close()
+	defer n.release()
+	return n.gpu(uuid)
+}
+func (n *nvml) gpu(uuid string) (model.GPU, error) {
+	g := model.GPU{UUID: uuid, Status: "ok", Source: "nvml", Fields: map[string]string{}, Processes: []model.Process{}, ProcessStatus: "unsupported"}
 	var h uintptr
 	if n.byUUID == nil {
 		return g, fmt.Errorf("missing UUID lookup")
@@ -238,4 +247,30 @@ func nvGPU(uuid string) (model.GPU, error) {
 		g.ProcessStatus = "mig_unsupported"
 	}
 	return g, nil
+}
+
+// A stream owns one NVML connection for its lifetime. Each GPU still has its
+// own process so a blocked driver call cannot block other cards or the agent.
+func newStreamSampler(kind, arg string) (func() (any, error), func()) {
+	n, err := openNVML()
+	if err != nil {
+		return fallbackStreamSampler(kind, arg), func() {}
+	}
+	if kind == "inventory" {
+		return func() (any, error) { return n.inventory() }, n.release
+	}
+	return func() (any, error) {
+		g, err := n.gpu(arg)
+		if err != nil {
+			return GPU(arg), nil
+		}
+		return g, nil
+	}, n.release
+}
+
+func (n *nvml) release() {
+	if n.close != nil {
+		n.close()
+	}
+	purego.Dlclose(n.lib)
 }

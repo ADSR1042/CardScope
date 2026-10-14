@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/disk"
@@ -148,6 +149,9 @@ func GPU(uuid string) model.GPU {
 
 // Worker 是内部 _worker 子命令入口，每次只执行一个查询并将 JSON 写到标准输出。
 func Worker(kind, arg string) error {
+	if strings.HasSuffix(kind, "-stream") {
+		return streamWorker(strings.TrimSuffix(kind, "-stream"), arg)
+	}
 	enc := json.NewEncoder(os.Stdout)
 	switch kind {
 	case "inventory":
@@ -217,22 +221,26 @@ func worker(ctx context.Context, kind, arg string, out any) error {
 // Collector 保留上轮计数、硬件清单和进程首次观测时间。
 // Sample 会更新这些状态，调用方应串行采样，不要共享给多个采样循环。
 type Collector struct {
-	inventory   []model.GPU
-	inventoryAt time.Time
-	previous    time.Time
-	nets        map[string]netinfo.IOCountersStat
-	ios         map[string]disk.IOCountersStat
-	seen        map[string]int64
-	WSL         bool
+	inventory       []model.GPU
+	inventoryAt     time.Time
+	inventoryWorker *persistentWorker
+	gpuWorkers      map[string]*persistentWorker
+	previous        time.Time
+	nets            map[string]netinfo.IOCountersStat
+	ios             map[string]disk.IOCountersStat
+	seen            map[string]int64
+	WSL             bool
 }
 
 func New() *Collector {
 	b, _ := os.ReadFile("/proc/sys/kernel/osrelease")
 	return &Collector{
-		nets: map[string]netinfo.IOCountersStat{},
-		ios:  map[string]disk.IOCountersStat{},
-		seen: map[string]int64{},
-		WSL:  strings.Contains(strings.ToLower(string(b)), "microsoft"),
+		nets:            map[string]netinfo.IOCountersStat{},
+		inventoryWorker: &persistentWorker{kind: "inventory"},
+		gpuWorkers:      map[string]*persistentWorker{},
+		ios:             map[string]disk.IOCountersStat{},
+		seen:            map[string]int64{},
+		WSL:             strings.Contains(strings.ToLower(string(b)), "microsoft"),
 	}
 }
 
@@ -260,7 +268,7 @@ func (c *Collector) Sample(ctx context.Context) model.Snapshot {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		gctx, cancel := context.WithTimeout(ctx, 4*time.Second)
+		gctx, cancel := context.WithTimeout(ctx, 35*time.Second)
 		defer cancel()
 		c.gpus(gctx, &s)
 	}()
@@ -371,14 +379,29 @@ func (c *Collector) gpus(ctx context.Context, s *model.Snapshot) {
 	// 硬件枚举缓存 60 秒；枚举失败时继续尝试已知显卡，不把暂时失败当成卡已移除。
 	if time.Since(c.inventoryAt) > 60*time.Second {
 		var list []model.GPU
-		dctx, cancel := context.WithTimeout(ctx, 1500*time.Millisecond)
-		e := worker(dctx, "inventory", "", &list)
+		dctx, cancel := context.WithTimeout(ctx, c.inventoryWorker.budget(1500*time.Millisecond))
+		e := c.inventoryWorker.sample(dctx, &list)
 		cancel()
 		if e == nil {
 			c.inventory = list
 			c.inventoryAt = time.Now()
 		} else {
 			s.GPUStatus = "inventory_failed"
+		}
+	}
+	// Create/prune slots before launching goroutines; retain a blocked slot until
+	// its old process exits so a D-state driver cannot accumulate new workers.
+	known := map[string]bool{}
+	for _, g := range c.inventory {
+		known[g.UUID] = true
+		if c.gpuWorkers[g.UUID] == nil {
+			c.gpuWorkers[g.UUID] = &persistentWorker{kind: "gpu", arg: g.UUID}
+		}
+	}
+	for uuid, w := range c.gpuWorkers {
+		if !known[uuid] {
+			w.close()
+			delete(c.gpuWorkers, uuid)
 		}
 	}
 	result := make([]model.GPU, len(c.inventory))
@@ -404,13 +427,18 @@ func (c *Collector) gpus(ctx context.Context, s *model.Snapshot) {
 				return
 			}
 			g := base
-			dctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+			w := c.gpuWorkers[base.UUID]
+			dctx, cancel := context.WithTimeout(ctx, w.budget(3*time.Second))
 			defer cancel()
-			if e := worker(dctx, "gpu", base.UUID, &g); e != nil {
+			if e := w.sample(dctx, &g); e != nil {
 				g = base
 				g.Status = "query_failed"
 				g.ProcessStatus = "unknown"
-				g.Fields = map[string]string{"query": "timeout_or_failure"}
+				g.Fields = map[string]string{"query": "query_failed"}
+				if errors.Is(e, context.DeadlineExceeded) || errors.Is(e, errWorkerStopping) {
+					g.Status = "timeout"
+					g.Fields["query"] = "timeout"
+				}
 			}
 			g.Index = base.Index
 			g.SeenAt = s.At
@@ -472,4 +500,32 @@ func (c *Collector) gpus(ctx context.Context, s *model.Snapshot) {
 	}
 	c.seen = nextseen
 	s.GPUs = result
+	s.GPUStatus = gpuSummary(s.GPUStatus, result)
+}
+
+// Close releases the monitor-owned GPU sessions on shutdown (including doctor).
+func (c *Collector) Close() {
+	c.inventoryWorker.close()
+	for _, w := range c.gpuWorkers {
+		w.close()
+	}
+}
+
+func gpuSummary(inventoryStatus string, gpus []model.GPU) string {
+	if inventoryStatus != "ok" {
+		return inventoryStatus
+	}
+	failed := 0
+	for _, g := range gpus {
+		if g.Status != "ok" {
+			failed++
+		}
+	}
+	if failed == 0 {
+		return "ok"
+	}
+	if failed == len(gpus) {
+		return "query_failed"
+	}
+	return "partial"
 }
